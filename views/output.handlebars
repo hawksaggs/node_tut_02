@@ -1,0 +1,25 @@
+{{#if success}}
+<p>Test Input:</p>
+{{#each data.input}}
+<div class="row">
+  <div class="col-md-12">
+    <p><strong>{{this}}</strong></p>
+  </div>
+</div>
+{{/each}}
+<p>Test Output:</p>
+{{#each data.output}}
+<div class="row">
+  <div class="col-md-12">
+    <p><strong>{{this}}</strong></p>
+  </div>
+</div>
+{{/each}}
+{{else}}
+<div class="row">
+  <div class="col-md-12">
+    <p>Extension not supported</p>
+  </div>
+</div>
+
+{{/if}}
