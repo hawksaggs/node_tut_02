@@ -1,16 +1,17 @@
-var express = require('express');
-var router = express.Router();
-var path = require('path');
-// var request = require('request');
+const express = require('express');
+const router = express.Router();
+const path = require('path');
 const readline = require('readline');
 const fs = require('fs');
+
 /* GET home page. */
 router.get('/', function(req, res, next) {
   res.render('index');
 });
 
+/* Show Output */
 router.post('/output', function(req,res){
-  // console.log(req);
+  // Roman numeral and its associated value
   var digit = {
     'I':1,
     'V':5,
@@ -20,15 +21,17 @@ router.post('/output', function(req,res){
     'D':500,
     'M':1000
   };
+  // Store items that is associated with roman numerals such as 'glob'.
   var strObj = {};
+  // Contains user input and output line.
   var lineObj = {
     input:[],
     output:[]
   };
+  // Store items that have 'Credits'.
   var itemObj = {};
   var ext = path.extname(req.file.originalname).toLowerCase();
-  var description = req.body.description;
-  description = description.toLowerCase().split(" ");
+  // Validating file extension.
   if(ext == '.txt'){
     var lineReader = readline.createInterface({
       input: fs.createReadStream(req.file.path)
@@ -37,9 +40,16 @@ router.post('/output', function(req,res){
       lineObj.input.push(line);
       stringDecode(line);
     }).on('close',function(){
-      res.render('output',{data:lineObj,success:true});
+      // Delete the temp file.
+      fs.unlink(req.file.path,function(err){
+        if(err){
+          console.log(err);
+        }
+        return res.render('output',{data:lineObj,success:true});
+      })
     });
 
+    /* Convert roman numerals to our decimal system */
     function symbolToDigit(symbol){
       var sum = 0;
       for(var i=0;i<=symbol.length-1;i++){
@@ -53,11 +63,14 @@ router.post('/output', function(req,res){
       return sum;
     }
 
+    /* Read string and give the answer asked by the input user. */
     function stringDecode(str){
       var newstr = [];
+      // Decode the first part where we are initializing what is what.
       if(!str.match(/credits/gi) && !str.match(/how/gi)){
         newstr = str.trim().split(' ');
         strObj[newstr[0]] = newstr[2];
+      // Decoding the items and its associated credits.
       }else if (!str.match(/how/gi)) {
         newstr = str.split(' ');
         var isIndex = newstr.indexOf('is');
@@ -76,6 +89,7 @@ router.post('/output', function(req,res){
         Object.keys(item).forEach(function(key){
           itemObj[key] = item[key]/decimalValue;
         });
+        // Finally giving the answer to the user.
       }else{
         newstr = str.split(' ');
         var isIndex = newstr.indexOf('is');
